@@ -79,6 +79,10 @@ if node[:provisioner][:use_serial_console]
   append_line += " console=tty0 console=ttyS1,115200n8"
 end
 
+if node[:crowbar][:network][:admin][:use_vlan]
+  append_line += " BOOTVLAN=#{node[:crowbar][:network][:admin][:vlan]}"
+end
+
 if ::File.exists?("/etc/crowbar.install.key")
   append_line += " crowbar.install.key=#{::File.read("/etc/crowbar.install.key").chomp.strip}"
 end
