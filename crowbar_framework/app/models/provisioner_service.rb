@@ -205,5 +205,29 @@ class ProvisionerService < ServiceObject
     [200, { :name => name } ]
   end
 
-end
+  def export_to_deployment_config(role)
+    @logger.debug("Provisioner export_to_deployment_config: entering")
 
+    config = DeploymentConfig.new("core", @bc_name)
+
+    web_config = {
+      "protocol" => "http",
+      "host" => "127.0.0.1",
+      "port" => role.default_attributes["provisioner"]["web_port"]
+    }
+
+    server = role.override_attributes["provisioner"]["elements"]["provisioner-server"].first
+    unless server.nil?
+      net_info = NodeObject.find_node_by_name(server).get_network_by_type("admin")
+      unless net_info.nil?
+        web_config["host"] = net_info["address"]
+      end
+    end
+
+    config["web"] = web_config
+    config.save
+
+    @logger.debug("Provisioner export_to_deployment_config: leaving")
+  end
+
+end
