@@ -406,8 +406,8 @@ node[:provisioner][:supported_oses].each do |os,params|
     # Add base OS install repo for suse
     node.set[:provisioner][:repositories][os]["base"] = { "baseurl=http://#{admin_ip}:#{web_port}/#{os}/install" => true }
 
-    ntp_servers = search(:node, "roles:ntp-server")
-    ntp_servers_ips = ntp_servers.map { |n| Chef::Recipe::Barclamp::Inventory.get_network_by_type(n, "admin").address }
+    ntp_settings = CrowbarConfig.fetch("core", "ntp")
+    ntp_servers = ntp_settings.fetch("internal_servers", [])
 
     target_platform_version = os.gsub(/^.*-/, "")
     template "#{os_dir}/crowbar_join.sh" do
@@ -417,7 +417,7 @@ node[:provisioner][:supported_oses].each do |os,params|
       source "crowbar_join.suse.sh.erb"
       variables(:admin_ip => admin_ip,
                 :web_port => web_port,
-                :ntp_servers_ips => ntp_servers_ips,
+                :ntp_servers_ips => ntp_servers,
                 :target_platform_version => target_platform_version)
     end
 
@@ -432,7 +432,7 @@ node[:provisioner][:supported_oses].each do |os,params|
       variables(:admin_ip => admin_ip,
                 :admin_broadcast => admin_broadcast,
                 :web_port => web_port,
-                :ntp_servers_ips => ntp_servers_ips,
+                :ntp_servers_ips => ntp_servers,
                 :os => os,
                 :crowbar_key => crowbar_key,
                 :domain => domain_name,
