@@ -174,7 +174,7 @@ class ProvisionerService < ServiceObject
     unless node.admin? or role.default_attributes["provisioner"]["dhcp"]["state_machine"][state].nil?
       # All non-admin nodes call single_chef_client if the state machine says to.
       @logger.info("Provisioner transition: Run the chef-client locally")
-      system("sudo -i /opt/dell/bin/single_chef_client.sh")
+      system("sudo", "-i", Crowbar::Path.libdir.join("single_chef_client.sh").expand_path.to_s)
     end
     @logger.debug("Provisioner transition: exiting for #{name} for #{state}")
     [200, { :name => name } ]
