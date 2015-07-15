@@ -137,15 +137,6 @@ if [[ ! -x /etc/init.d/bluepill ]]; then
     log_to chef chkconfig chef-client off
     chmod 644 /etc/init.d/chef-client
 
-    # Install Chef patches Crowbar needs.
-    mkdir -p /opt/dell/
-    (   cd /opt/dell
-        wget -q "<%=@provisioner_web%>/patches.tar.gz"
-        tar xzvf patches.tar.gz
-        cd patches
-        ./patch.sh
-    )
-
     # Make rubygems do what we want.
     cat >/etc/gemrc <<EOF
 :sources:
