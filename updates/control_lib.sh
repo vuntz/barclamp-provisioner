@@ -98,7 +98,7 @@ get_state() { try_to "$MAXTRIES" 15 __get_state "$@"; }
 reboot_system() {
   sync
   sleep 30
-  umount -l /updates /var/log/crowbar/sledgehammer
+  umount -l /usr/lib/crowbar/sledgehammer /var/log/crowbar/sledgehammer
   reboot -f
 }
 

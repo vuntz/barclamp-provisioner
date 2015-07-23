@@ -142,20 +142,20 @@ EOF
 fi
 
 # Add full code set
-if [ -e /updates/full_data.sh ] ; then
-  cp /updates/full_data.sh /tmp
+if [ -e /usr/lib/crowbar/sledgehammer/full_data.sh ] ; then
+  cp /usr/lib/crowbar/sledgehammer/full_data.sh /tmp
   /tmp/full_data.sh
 fi
 
 # Get stuff out of nfs.
-cp /updates/parse_node_data /tmp
+cp /usr/lib/crowbar/sledgehammer/parse_node_data /tmp
 
 # get validation cert
 curl -L -o /etc/chef/validation.pem \
     --connect-timeout 60 -s \
     "http://$ADMIN_IP:8091/validation.pem"
 
-. "/updates/control_lib.sh"
+. "/usr/lib/crowbar/sledgehammer/control_lib.sh"
 
 nuke_everything() {
     local vg pv maj min blocks name
@@ -202,8 +202,8 @@ run_hooks() {
     # We only handle pre and post hooks.  Anything else is a bug in
     # control.sh that we should debug.
     case $3 in
-        pre) hookdirs=("/updates/$1/$2-$3" "/updates/$2-$3");;
-        post) hookdirs=("/updates/$2-$3" "/updates/$1/$2-$3");;
+        pre) hookdirs=("/usr/lib/crowbar/sledgehammer/$1/$2-$3" "/usr/lib/crowbar/sledgehammer/$2-$3");;
+        post) hookdirs=("/usr/lib/crowbar/sledgehammer/$2-$3" "/usr/lib/crowbar/sledgehammer/$1/$2-$3");;
         *) post_state "$1" debug; reboot_system;;
     esac
     for hookdir in "${hookdirs[@]}"; do
@@ -248,8 +248,8 @@ walk_node_through () {
 
 # If there is a custom control.sh for this system, source it.
 [[ -n "$HOSTNAME" ]] && \
-[[ -x /updates/$HOSTNAME/control.sh ]] && \
-    . "/updates/$HOSTNAME/control.sh"
+[[ -x /usr/lib/crowbar/sledgehammer/$HOSTNAME/control.sh ]] && \
+    . "/usr/lib/crowbar/sledgehammer/$HOSTNAME/control.sh"
 
 discover() {
     echo "Discovering with: $HOSTNAME"
